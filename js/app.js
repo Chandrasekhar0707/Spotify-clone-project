@@ -158,13 +158,60 @@ async function getSongs(folder) {
         noSongsMessage.style.display = songs.length > 0 ? "none" : "block";
     }
 
-    // Attach click events
-    Array.from(songUL.getElementsByTagName("li")).forEach(e => {
-        e.addEventListener("click", () => {
-            const track = e.dataset.track;
+    function updateGlobalPlayButton(isPlaying) {
+        const playBtnTop = document.getElementById('play');
+        if (playBtnTop) {
+            playBtnTop.src = isPlaying ? 'img/pause.svg' : 'img/play.svg';
+        }
+        if (activeCard) {
+            const img = activeCard.querySelector('.card-play');
+            if (img) img.src = isPlaying ? 'img/pause.svg' : 'img/card-play.svg';
+        }
+    }
+
+    function getTrackNameFromSrc(src) {
+        try {
+            const lastSegment = src.split('/').slice(-1)[0];
+            return decodeURIComponent(lastSegment || '');
+        } catch (err) {
+            return src;
+        }
+    }
+
+    function toggleLibraryItem(li) {
+        const track = li.dataset.track;
+        const currentTrack = getTrackNameFromSrc(currentSong.src);
+        const isCurrentTrack = currentTrack === track;
+
+        if (isCurrentTrack) {
+            if (currentSong.paused) {
+                currentSong.play();
+                setActiveLibraryItem(li, true);
+                updateGlobalPlayButton(true);
+            } else {
+                currentSong.pause();
+                setActiveLibraryItem(li, false);
+                updateGlobalPlayButton(false);
+            }
+        } else {
             playMusic(track);
-            setActiveLibraryItem(e);
+            setActiveLibraryItem(li, true);
+        }
+    }
+
+    Array.from(songUL.getElementsByTagName("li")).forEach(li => {
+        const playBtn = li.querySelector('.library-play');
+
+        li.addEventListener("click", () => {
+            toggleLibraryItem(li);
         });
+
+        if (playBtn) {
+            playBtn.addEventListener('click', ev => {
+                ev.stopPropagation();
+                toggleLibraryItem(li);
+            });
+        }
     });
 
     return songs;

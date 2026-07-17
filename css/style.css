@@ -151,14 +151,14 @@ body {
 .cardContainer {
   margin: 30px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   overflow-y: auto;
   max-height: 60vh;
 }
 
 .card {
-  width: 194px;
+  width: 212px;
   padding: 10px;
   border-radius: 5px;
   background-color: #252525;
